@@ -8,8 +8,6 @@ bower install angular-dragon-drop
 ```
 
 ## Usage
-
-First:
 1. Include the `dragon-drop.js` script provided by this component into your app.
 2. Add `btford.dragon-drop` as a module dependency to your app.
 
