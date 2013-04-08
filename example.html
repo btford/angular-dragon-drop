@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dragon Drop for AngularJS</title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/2.3.1/spruce/bootstrap.min.css">
+  <style>
+    [btf-dragon] {
+      padding: 20px;
+      border: 1px solid red;
+    }
+  </style>
+</head>
+<body ng-app="ExampleApp">
+
+  <div class="container" ng-controller="MainCtrl">
+    
+    <div class="row">
+      <h1>Dragon Drop Example</h1>
+    </div>
+    
+    <hr>
+  
+    <div class="row">
+      <div class="span6">
+        <h3>Things</h3>
+        <div btf-dragon="thing in things">{{thing}}</div>
+      </div>
+      <div class="span6">
+        <h3>Other Things</h3>
+        <div btf-dragon="thing in otherThings">{{thing}}</div>
+      </div>
+    </div>
+    
+    <hr>
+
+    <div class="row">
+      <div class="span6">
+        <h3>Things</h3>
+        <pre>{{things | json}}</pre>
+      </div>
+      <div class="span6">
+        <h3>Other Things</h3>
+        <pre>{{otherThings | json}}</pre>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+  <script src="dragon-drop.js"></script>
+  <script>
+    angular.module('ExampleApp', ['btford.dragon-drop']).
+      controller('MainCtrl', function ($scope) {
+        $scope.things = ['one', 'two', 'three'];
+        $scope.otherThings = [];
+      });
+  </script>
+</body>
+</html>
