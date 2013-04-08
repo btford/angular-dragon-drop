@@ -1,6 +1,8 @@
 # angular-dragon-drop
 "Drag and drop" directives for AngularJS. Work in progress.
 
+## [Try out an example](http://plunker.co/edit/CiXu0R?p=preview)
+
 ## Install
 
 ```shell
