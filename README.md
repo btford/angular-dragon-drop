@@ -7,7 +7,12 @@
 bower install angular-dragon-drop
 ```
 
-## Use
+## Usage
+
+First:
+1. Include the `dragon-drop.js` script provided by this component into your app.
+2. Add `btford.dragon-drop` as a module dependency to your app.
+
 Repeats a template inside the dragon over a list.
 ```html
 <div btf-dragon="item in list">
