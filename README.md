@@ -27,6 +27,14 @@ You can drag from one dragon onto another, and the models will be updated accord
 ## Config
 This is not a kitchen sink every-option-you-can-think-of module. This is a starting point. Configure by forking and editing the code according to your needs.
 
+## Callbacks
+It is possible to hook up your own callbacks into `dragstart` and `dragend` events.
+```html
+<div btf-dragon="item in list" dragstart="myCtrlFn()" dragend="changed = true">
+  {{item.name}}
+</div>
+```
+
 ## Example
 See `example.html`.
 

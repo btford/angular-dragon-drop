@@ -71,7 +71,13 @@ angular.module('btford.dragon-drop', []).
     return {
       restrict: 'A',
       terminal: true,
+      scope: {
+          dragstart: '&',
+          dragend: '&'
+      },
       link: function (scope, elt, attr) {
+        var isolateScope = scope;
+        scope = scope.$parent;
 
         // get the `thing in things` expression
         var expression = attr.btfDragon;
@@ -92,6 +98,8 @@ angular.module('btford.dragon-drop', []).
         $compile(child)(scope);
 
         var spawnFloaty = function () {
+          scope.$apply(isolateScope.dragstart);
+
           scope.$apply(function () {
             floaty = angular.element('<div style="position: fixed;">' + template + '</div>');
             var floatyScope = scope.$new();
@@ -109,6 +117,7 @@ angular.module('btford.dragon-drop', []).
             floaty.remove();
             floaty = null;
           }
+          scope.$apply(isolateScope.dragend);
         };
 
         elt.bind('mousedown', function (ev) {
