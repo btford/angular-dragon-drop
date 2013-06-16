@@ -73,7 +73,9 @@ angular.module('btford.dragon-drop', []).
       terminal: true,
       scope: {
           dragstart: '&',
-          dragend: '&'
+          dragend: '&',
+          draggable: '&',
+          droppable: '&'
       },
       link: function (scope, elt, attr) {
         var isolateScope = scope;
@@ -121,7 +123,7 @@ angular.module('btford.dragon-drop', []).
         };
 
         elt.bind('mousedown', function (ev) {
-          if (dragValue) {
+          if (dragValue || scope.$eval(isolateScope.draggable) == false) {
             return;
           }
           scope.$apply(function () {
@@ -137,14 +139,24 @@ angular.module('btford.dragon-drop', []).
           drag(ev);
         });
 
+        var backToOriginal = function(){
+            scope.$apply(function () {
+              dragOrigin.push(dragValue);
+              dragValue = dragOrigin = null;
+            });
+        };
         // handle something being dropped here
         elt.bind('mouseup', function (ev) {
           if (dragValue) {
-            scope.$apply(function () {
-              var list = scope.$eval(rhs);
-              list.push(dragValue);
-              dragValue = dragOrigin = null;
-            });
+            if ( scope.$eval(isolateScope.droppable) != false) {
+              scope.$apply(function () {
+                var list = scope.$eval(rhs);
+                list.push(dragValue);
+                dragValue = dragOrigin = null;
+              });
+            } else {
+              backToOriginal();
+            }
           }
           enableSelect();
           killFloaty();
@@ -153,10 +165,7 @@ angular.module('btford.dragon-drop', []).
         // else, the event bubbles up to document
         $document.bind('mouseup', function (ev) {
           if (dragValue) {
-            scope.$apply(function () {
-              dragOrigin.push(dragValue);
-              dragValue = dragOrigin = null;
-            });
+            backToOriginal();
             enableSelect();
             killFloaty();
           }

@@ -35,6 +35,14 @@ It is possible to hook up your own callbacks into `dragstart` and `dragend` even
 </div>
 ```
 
+## Options
+You can have some areas only `draggable` or `droppable`:
+```html
+<div btf-dragon="item in list" draggable="true" droppable="2==3">
+  {{item.name}}
+</div>
+```
+
 ## Example
 See `example.html`.
 
