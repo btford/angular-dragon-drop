@@ -71,7 +71,15 @@ angular.module('btford.dragon-drop', []).
     return {
       restrict: 'A',
       terminal: true,
+      scope: {
+          dragstart: '&',
+          dragend: '&',
+          draggable: '&',
+          droppable: '&'
+      },
       link: function (scope, elt, attr) {
+        var isolateScope = scope;
+        scope = scope.$parent;
 
         // get the `thing in things` expression
         var expression = attr.btfDragon;
@@ -92,6 +100,8 @@ angular.module('btford.dragon-drop', []).
         $compile(child)(scope);
 
         var spawnFloaty = function () {
+          scope.$apply(isolateScope.dragstart);
+
           scope.$apply(function () {
             floaty = angular.element('<div style="position: fixed;">' + template + '</div>');
             var floatyScope = scope.$new();
@@ -109,10 +119,11 @@ angular.module('btford.dragon-drop', []).
             floaty.remove();
             floaty = null;
           }
+          scope.$apply(isolateScope.dragend);
         };
 
         elt.bind('mousedown', function (ev) {
-          if (dragValue) {
+          if (dragValue || scope.$eval(isolateScope.draggable) == false) {
             return;
           }
           scope.$apply(function () {
@@ -128,14 +139,24 @@ angular.module('btford.dragon-drop', []).
           drag(ev);
         });
 
+        var backToOriginal = function(){
+            scope.$apply(function () {
+              dragOrigin.push(dragValue);
+              dragValue = dragOrigin = null;
+            });
+        };
         // handle something being dropped here
         elt.bind('mouseup', function (ev) {
           if (dragValue) {
-            scope.$apply(function () {
-              var list = scope.$eval(rhs);
-              list.push(dragValue);
-              dragValue = dragOrigin = null;
-            });
+            if ( scope.$eval(isolateScope.droppable) != false) {
+              scope.$apply(function () {
+                var list = scope.$eval(rhs);
+                list.push(dragValue);
+                dragValue = dragOrigin = null;
+              });
+            } else {
+              backToOriginal();
+            }
           }
           enableSelect();
           killFloaty();
@@ -144,10 +165,7 @@ angular.module('btford.dragon-drop', []).
         // else, the event bubbles up to document
         $document.bind('mouseup', function (ev) {
           if (dragValue) {
-            scope.$apply(function () {
-              dragOrigin.push(dragValue);
-              dragValue = dragOrigin = null;
-            });
+            backToOriginal();
             enableSelect();
             killFloaty();
           }
