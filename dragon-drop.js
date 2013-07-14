@@ -1,5 +1,5 @@
 /*
- * angular-dragon-drop v0.0.1
+ * angular-dragon-drop v0.1.0
  * (c) 2013 Brian Ford http://briantford.com
  * License: MIT
  */
@@ -97,7 +97,6 @@ angular.module('btford.dragon-drop', []).
         }
         var child = template.clone();
         child.attr('ng-repeat', expression);
-        console.log(child);
         container.html('');
 
         container.append(child);
@@ -132,7 +131,6 @@ angular.module('btford.dragon-drop', []).
             scope.$apply(function () {
               var targetScope = angular.element(ev.target).scope();
               var value = dragValue = targetScope[lhs];
-              //console.log(value);
               var list = scope.$eval(rhs);
               dragOrigin = list;
               list.splice(list.indexOf(value), 1);
