@@ -182,10 +182,14 @@ angular.module('btford.dragon-drop', []).
             if (dragValue) {
               return;
             }
+            var targetScope = angular.element(ev.target).scope();
+            var value = dragValue = targetScope[lhs];
+            var list = scope.$eval(rhs);
+
+            // return if we don't have an value to drag
+            if(!value) return
+
             scope.$apply(function () {
-              var targetScope = angular.element(ev.target).scope();
-              var value = dragValue = targetScope[lhs];
-              var list = scope.$eval(rhs);
               dragOrigin = list;
               list.splice(list.indexOf(value), 1);
             });
