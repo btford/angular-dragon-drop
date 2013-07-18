@@ -39,13 +39,14 @@ angular.module('btford.dragon-drop', []).
     var dragValue,
       dragOrigin,
       floaty;
+    var globalHandlerAdded = false;
 
     var drag = function (ev) {
       var x = ev.clientX,
         y = ev.clientY;
 
-      floaty.css('left', x + 10 + 'px');
-      floaty.css('top', y + 10 + 'px');
+      floaty.css('left', x - 10 + 'px');
+      floaty.css('top', y - 10 + 'px');
     };
 
     var disableSelect = function () {
@@ -67,6 +68,65 @@ angular.module('btford.dragon-drop', []).
         'user-select': ''
       });
     };
+
+    var killFloaty = function () {
+      $document.unbind('mousemove', drag);
+      if (floaty) {
+        floaty.remove();
+        floaty = null;
+      }
+    };
+
+    var addMouseUpListener = function(scope) {
+      // we only need one handler
+      if (globalHandlerAdded) return
+
+      $document.bind('mouseup', function (ev) {
+        if (dragValue) {
+          floaty[0].style.display = 'none';
+
+          // hide floaty to see whats underneath
+          var dropArea = document.elementFromPoint(ev.clientX,ev.clientY);
+          
+          if (dropArea.nodeType == 3) { // Opera
+            dropArea = dropArea.parentNode;
+          }
+
+          // unhide floaty
+          floaty[0].style.display = '';
+
+          // see if we have an dragon-drop element
+          dropArea = angular.element(dropArea);
+          var expression = dropArea.attr('btf-dragon')
+
+          if(expression) {
+            // there it is! Get list and add item
+            var targetScope = dropArea.scope();
+            var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*$/);
+            
+            targetScope.$apply(function() {
+              var targetList = targetScope.$eval(match[2]);
+              targetList.push(dragValue);
+              dragValue = dragOrigin = null;  
+            });
+            
+          }
+          else {
+            // no dropArea here. Put item back to origin
+            scope.$apply(function () {
+              dragOrigin.push(dragValue);
+              dragValue = dragOrigin = null;
+            });
+          }
+
+          enableSelect();
+          killFloaty();
+      
+        }
+      });
+
+      globalHandlerAdded = true;
+    }
 
     return {
       restrict: 'A',
@@ -103,6 +163,8 @@ angular.module('btford.dragon-drop', []).
 
         return function (scope, elt, attr) {
 
+          addMouseUpListener(scope);
+
           var spawnFloaty = function () {
             scope.$apply(function () {
               floaty = template.clone();
@@ -114,14 +176,6 @@ angular.module('btford.dragon-drop', []).
             });
 
             $document.bind('mousemove', drag);
-          };
-
-          var killFloaty = function () {
-            $document.unbind('mousemove', drag);
-            if (floaty) {
-              floaty.remove();
-              floaty = null;
-            }
           };
 
           elt.bind('mousedown', function (ev) {
@@ -140,30 +194,6 @@ angular.module('btford.dragon-drop', []).
             drag(ev);
           });
 
-          // handle something being dropped here
-          elt.bind('mouseup', function (ev) {
-            if (dragValue) {
-              scope.$apply(function () {
-                var list = scope.$eval(rhs);
-                list.push(dragValue);
-                dragValue = dragOrigin = null;
-              });
-            }
-            enableSelect();
-            killFloaty();
-          });
-
-          // else, the event bubbles up to document
-          $document.bind('mouseup', function (ev) {
-            if (dragValue) {
-              scope.$apply(function () {
-                dragOrigin.push(dragValue);
-                dragValue = dragOrigin = null;
-              });
-              enableSelect();
-              killFloaty();
-            }
-          });
         };
       }
     };
