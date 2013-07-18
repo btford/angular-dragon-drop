@@ -38,15 +38,17 @@ angular.module('btford.dragon-drop', []).
 
     var dragValue,
       dragOrigin,
-      floaty;
+      floaty,
+      offsetX,
+      offsetY;
     var globalHandlerAdded = false;
 
     var drag = function (ev) {
       var x = ev.clientX,
         y = ev.clientY;
 
-      floaty.css('left', x - 10 + 'px');
-      floaty.css('top', y - 10 + 'px');
+      floaty.css('left', x - offsetX + 'px');
+      floaty.css('top', y - offsetY + 'px');
     };
 
     var disableSelect = function () {
@@ -163,12 +165,15 @@ angular.module('btford.dragon-drop', []).
 
         return function (scope, elt, attr) {
 
+          // add global drop listener
           addMouseUpListener(scope);
 
           var spawnFloaty = function () {
             scope.$apply(function () {
               floaty = template.clone();
               floaty.css('position', 'fixed');
+              // prevents calculation errors
+              floaty.css('margin', '0px');
               var floatyScope = scope.$new();
               floatyScope[lhs] = dragValue;
               $compile(floaty)(floatyScope);
@@ -188,6 +193,10 @@ angular.module('btford.dragon-drop', []).
 
             // return if we don't have an value to drag
             if(!value) return
+            
+            // get offset inside element to drag
+            offsetX = (ev.pageX - ev.target.offsetLeft); 
+            offsetY = (ev.pageY - ev.target.offsetTop);
 
             scope.$apply(function () {
               dragOrigin = list;
