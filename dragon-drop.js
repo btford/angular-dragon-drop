@@ -127,20 +127,18 @@ angular.module('btford.dragon-drop', []).
 
           // hide floaty to see whats underneath
           var dropArea = document.elementFromPoint(ev.clientX,ev.clientY);
-          
-          if (dropArea.nodeType == 3) { // Opera
-            dropArea = dropArea.parentNode;
-          }
-
           // unhide floaty
           floaty[0].style.display = '';
 
-          // see if we have an dragon-drop element
-          dropArea = angular.element(dropArea);
-          var expression = dropArea.attr('btf-dragon')
+          // see if we have an dragon-drop element somewhere
+          while (dropArea && !(dropArea.getAttribute && dropArea.getAttribute('btf-dragon'))) {
+            dropArea = dropArea.parentNode
+          }
 
-          if(expression) {
+          if(dropArea) {
             // there it is! Get list and add item
+            dropArea = angular.element(dropArea);
+            var expression = dropArea.attr('btf-dragon')
             var targetScope = dropArea.scope();
             var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*$/);
             
