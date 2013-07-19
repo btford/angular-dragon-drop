@@ -79,6 +79,21 @@ angular.module('btford.dragon-drop', []).
       }
     };
 
+    var getOffsetOfElem = function (elem) {
+      var xPosition = 0;
+      var yPosition = 0;
+
+      var box = elem.getBoundingClientRect();
+      var body = $document[0].body;
+
+      xPosition += box.left + body.scrollLeft;
+      yPosition += box.top + body.scrollTop;
+
+      return {left: xPosition, top:yPosition};
+    }
+
+
+
     var addMouseUpListener = function(scope) {
       // we only need one handler
       if (globalHandlerAdded) return
@@ -109,7 +124,7 @@ angular.module('btford.dragon-drop', []).
             targetScope.$apply(function() {
               var targetList = targetScope.$eval(match[2]);
               targetList.push(dragValue);
-              dragValue = dragOrigin = null;  
+              dragValue = dragOrigin = null;
             });
             
           }
@@ -149,7 +164,7 @@ angular.module('btford.dragon-drop', []).
 
         // wrap text nodes
         try {
-          template = angular.element(template);
+          template = angular.element(template.trim());
           if (template.length === 0) {
             throw new Error('');
           }
@@ -174,6 +189,9 @@ angular.module('btford.dragon-drop', []).
               floaty.css('position', 'fixed');
               // prevents calculation errors
               floaty.css('margin', '0px');
+              floaty.css('z-index', '99999');
+
+
               var floatyScope = scope.$new();
               floatyScope[lhs] = dragValue;
               $compile(floaty)(floatyScope);
@@ -195,8 +213,11 @@ angular.module('btford.dragon-drop', []).
             if(!value) return
             
             // get offset inside element to drag
-            offsetX = (ev.pageX - ev.target.offsetLeft); 
-            offsetY = (ev.pageY - ev.target.offsetTop);
+            var offset = getOffsetOfElem(ev.target);
+            //var offset = $(ev.target).offset();
+            offsetX = (ev.pageX - offset.left);
+            offsetY = (ev.pageY - offset.top);
+            console.log(ev.target, offsetX, offsetY);
 
             scope.$apply(function () {
               dragOrigin = list;
