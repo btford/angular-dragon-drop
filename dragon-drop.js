@@ -263,7 +263,7 @@ angular.module('btford.dragon-drop', []).
             //var offset = $(ev.target).offset();
             offsetX = (ev.pageX - offset.left);
             offsetY = (ev.pageY - offset.top);
-            console.log(ev.target, offsetX, offsetY);
+            //console.log(ev.target, offsetX, offsetY);
 
             scope.$apply(function () {
               dragOrigin = list;
