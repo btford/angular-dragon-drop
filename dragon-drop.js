@@ -36,6 +36,12 @@ angular.module('btford.dragon-drop', []).
     */
     // this ASCII dragon is really important, do not remove
 
+
+    /*
+      ============================
+      GLOBAL FUNCTIONS
+      ============================
+    */
     var dragValue,
       dragOrigin,
       floaty,
@@ -43,6 +49,9 @@ angular.module('btford.dragon-drop', []).
       offsetY;
     var globalHandlerAdded = false;
 
+    /*
+    * Handler for mousemove
+    */
     var drag = function (ev) {
       var x = ev.clientX,
         y = ev.clientY;
@@ -51,6 +60,9 @@ angular.module('btford.dragon-drop', []).
       floaty.css('top', y - offsetY + 'px');
     };
 
+    /*
+    * disables textselection for the whole page
+    */
     var disableSelect = function () {
       angular.element(document.body).css({
         '-moz-user-select': '-moz-none',
@@ -61,6 +73,9 @@ angular.module('btford.dragon-drop', []).
       });
     };
 
+    /*
+    * enables textselection for the whole page
+    */
     var enableSelect = function () {
       angular.element(document.body).css({
         '-moz-user-select': '',
@@ -71,6 +86,9 @@ angular.module('btford.dragon-drop', []).
       });
     };
 
+    /*
+    * remove floaty
+    */
     var killFloaty = function () {
       $document.unbind('mousemove', drag);
       if (floaty) {
@@ -79,6 +97,9 @@ angular.module('btford.dragon-drop', []).
       }
     };
 
+    /*
+    * returns the position of an element relative to the window
+    */
     var getOffsetOfElem = function (elem) {
       var xPosition = 0;
       var yPosition = 0;
@@ -93,7 +114,9 @@ angular.module('btford.dragon-drop', []).
     }
 
 
-
+    /*
+    * Mouseup handler and drop handling
+    */
     var addMouseUpListener = function(scope) {
       // we only need one handler
       if (globalHandlerAdded) return
@@ -145,8 +168,19 @@ angular.module('btford.dragon-drop', []).
       globalHandlerAdded = true;
     }
 
+    /*
+      ============================
+      DIRECTIVE DECLARATION
+      ============================
+    */
     return {
       restrict: 'A',
+
+      /*
+        ============================
+        COMPILE FUNCTION
+        ============================
+      */
       compile: function (container, attr) {
 
         // get the `thing in things` expression
@@ -178,11 +212,20 @@ angular.module('btford.dragon-drop', []).
 
         container.append(child);
 
+        /*
+          ============================
+          LINKING FUNCTION
+          ============================
+        */
         return function (scope, elt, attr) {
 
           // add global drop listener
           addMouseUpListener(scope);
 
+
+          /*
+          * Creates a copy of the item template an adds it to body
+          */
           var spawnFloaty = function () {
             scope.$apply(function () {
               floaty = template.clone();
@@ -201,6 +244,9 @@ angular.module('btford.dragon-drop', []).
             $document.bind('mousemove', drag);
           };
 
+          /*
+          * Mouse Down Handler
+          */
           elt.bind('mousedown', function (ev) {
             if (dragValue) {
               return;
