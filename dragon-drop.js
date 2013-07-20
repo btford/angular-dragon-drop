@@ -97,11 +97,21 @@ angular.module('btford.dragon-drop', []).
         }
         var child = template.clone();
         child.attr('ng-repeat', expression);
+        // todo: do not clobber existing classes
+        child.attr('ng-class', "{selected: 'selected'}");
         container.html('');
 
         container.append(child);
 
+        var duplicate = container.attr('btf-double-dragon') !== undefined;
+
         return function (scope, elt, attr) {
+
+          var accepts = scope.$eval(attr.btfDragonAccepts);
+
+          if (accepts !== undefined && typeof accepts !== 'function') {
+            throw Error('Expected btfDragonAccepts to be a function.');
+          }
 
           var spawnFloaty = function () {
             scope.$apply(function () {
@@ -111,9 +121,9 @@ angular.module('btford.dragon-drop', []).
               floatyScope[lhs] = dragValue;
               $compile(floaty)(floatyScope);
               angular.element(document.body).append(floaty);
+              $document.bind('mousemove', drag);
+              enableSelect();
             });
-
-            $document.bind('mousemove', drag);
           };
 
           var killFloaty = function () {
@@ -122,34 +132,46 @@ angular.module('btford.dragon-drop', []).
               floaty.remove();
               floaty = null;
             }
+            disableSelect();
           };
 
           elt.bind('mousedown', function (ev) {
             if (dragValue) {
               return;
             }
+            
+            // find the right parent
+            var originElement = angular.element(ev.target);
+            var originScope = originElement.scope();
+            while (originScope[lhs] === undefined) {
+              originElement = originElement.parent();
+              originScope = originElement.scope();
+              if (!originScope) {
+                return;
+              }
+            }
             scope.$apply(function () {
-              var targetScope = angular.element(ev.target).scope();
-              var value = dragValue = targetScope[lhs];
-              var list = scope.$eval(rhs);
-              dragOrigin = list;
-              list.splice(list.indexOf(value), 1);
+              dragValue = originScope[lhs];
+              dragOrigin = scope.$eval(rhs);
+              if (duplicate) {
+                dragValue = angular.copy(dragValue);
+              } else {
+                dragOrigin.splice(dragOrigin.indexOf(dragValue), 1);
+              }
             });
-            disableSelect();
             spawnFloaty();
             drag(ev);
           });
 
           // handle something being dropped here
           elt.bind('mouseup', function (ev) {
-            if (dragValue) {
+            if (dragValue && (!accepts || accepts(dragValue))) {
               scope.$apply(function () {
                 var list = scope.$eval(rhs);
                 list.push(dragValue);
                 dragValue = dragOrigin = null;
               });
             }
-            enableSelect();
             killFloaty();
           });
 
@@ -160,7 +182,6 @@ angular.module('btford.dragon-drop', []).
                 dragOrigin.push(dragValue);
                 dragValue = dragOrigin = null;
               });
-              enableSelect();
               killFloaty();
             }
           });
