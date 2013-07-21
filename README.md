@@ -45,7 +45,7 @@ Add the `btf-double-dragon` attribute to an element with the `btf-dragon` attrib
 
 Example:
 ```html
-<h2>These get copied</h2>h2>
+<h2>These get copied</h2>
 <div btf-dragon="item in list" btf-double-dragon>
   {{item.name}}
 </div>
