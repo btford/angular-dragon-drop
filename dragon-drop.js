@@ -1,5 +1,5 @@
 /*
- * angular-dragon-drop v0.3.0
+ * angular-dragon-drop v0.3.1
  * (c) 2013 Brian Ford http://briantford.com
  * License: MIT
  */
