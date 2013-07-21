@@ -244,8 +244,7 @@ angular.module('btford.dragon-drop', []).
             var originScope = originElement.scope();
 
             while (originScope[valueIdentifier] === undefined) {
-              originElement = originElement.parent();
-              originScope = originElement.scope();
+              originScope = originScope.$parent;
               if (!originScope) {
                 return;
               }
