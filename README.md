@@ -22,6 +22,17 @@ Repeats a template inside the dragon over a list.
 ```
 You can drag from one dragon onto another, and the models will be updated accordingly.
 
+It also works on objects:
+```html
+<div btf-dragon="(key, value) in list">
+  {{key}}: {{value}}
+</div>
+<div btf-dragon="(key, value) in otherList">
+  {{key}}: {{value}}
+</div>
+```
+
+
 ## Config
 This is not a kitchen sink every-option-you-can-think-of module.
 This is a starting point.
