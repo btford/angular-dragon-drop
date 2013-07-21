@@ -37,6 +37,7 @@ angular.module('btford.dragon-drop', []).
     // this ASCII dragon is really important, do not remove
 
     var dragValue,
+      dragKey,
       dragOrigin,
       dragDuplicate = false,
       floaty,
@@ -49,6 +50,24 @@ angular.module('btford.dragon-drop', []).
 
       floaty.css('left', x + 'px');
       floaty.css('top', y + 'px');
+    };
+
+    var remove = function (collection, index) {
+      if (collection instanceof Array) {
+        return collection.splice(index, 1);
+      } else {
+        var temp = collection[index];
+        delete collection[index];
+        return temp;
+      }
+    };
+
+    var add = function (collection, item, key) {
+      if (collection instanceof Array) {
+        collection.push(item);
+      } else {
+        collection[key] = item;
+      }
     };
 
     var documentBody = angular.element($document[0].body);
@@ -129,15 +148,15 @@ angular.module('btford.dragon-drop', []).
         var targetScope = dropArea.scope();
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*$/);
 
-        targetScope.$apply(function() {
-          var targetList = targetScope.$eval(match[2]);
-          targetList.push(dragValue);
+        var targetList = targetScope.$eval(match[2]);
+        targetScope.$apply(function () {
+          add(targetList, dragValue, dragKey);
         });
       } else if (!dragDuplicate) {
         // no dropArea here
         // put item back to origin
         $rootScope.$apply(function () {
-          dragOrigin.push(dragValue);
+          add(dragOrigin, dragValue, dragKey);
         });
       }
 
@@ -159,6 +178,11 @@ angular.module('btford.dragon-drop', []).
         }
         var lhs = match[1];
         var rhs = match[2];
+
+        match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
+
+        var valueIdentifier = match[3] || match[1];
+        var keyIdentifier = match[2];
 
         // pull out the template to re-use.
         // Improvised ng-transclude.
@@ -199,7 +223,10 @@ angular.module('btford.dragon-drop', []).
               floaty.css('z-index', '99999');
 
               var floatyScope = scope.$new();
-              floatyScope[lhs] = dragValue;
+              floatyScope[valueIdentifier] = dragValue;
+              if (keyIdentifier) {
+                floatyScope[keyIdentifier] = dragKey;
+              }
               $compile(floaty)(floatyScope);
               documentBody.append(floaty);
               $document.bind('mousemove', drag);
@@ -216,7 +243,7 @@ angular.module('btford.dragon-drop', []).
             var originElement = angular.element(ev.target);
             var originScope = originElement.scope();
 
-            while (originScope[lhs] === undefined) {
+            while (originScope[valueIdentifier] === undefined) {
               originElement = originElement.parent();
               originScope = originElement.scope();
               if (!originScope) {
@@ -224,7 +251,8 @@ angular.module('btford.dragon-drop', []).
               }
             }
 
-            dragValue = originScope[lhs];
+            dragValue = originScope[valueIdentifier];
+            dragKey = originScope[keyIdentifier];
             if (!dragValue) {
               return;
             }
@@ -233,13 +261,13 @@ angular.module('btford.dragon-drop', []).
             var offset = getElementOffset(ev.target);
 
             dragOrigin = scope.$eval(rhs);
-            scope.$apply(function () {
-              if (duplicate) {
-                dragValue = angular.copy(dragValue);
-              } else {
-                dragOrigin.splice(dragOrigin.indexOf(dragValue), 1);
-              }
-            });
+            if (duplicate) {
+              dragValue = angular.copy(dragValue);
+            } else {
+              scope.$apply(function () {
+                remove(dragOrigin, dragKey || dragOrigin.indexOf(dragValue));
+              });
+            }
             dragDuplicate = duplicate;
 
             offsetX = (ev.pageX - offset.left);
