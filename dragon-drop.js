@@ -41,6 +41,7 @@ angular.module('btford.dragon-drop', []).
       dragOrigin,
       dragDuplicate = false,
       dragEliminate = false,
+      mouseReleased = true,
       floaty,
       offsetX,
       offsetY;
@@ -128,6 +129,8 @@ angular.module('btford.dragon-drop', []).
     };
 
     $document.bind('mouseup', function (ev) {
+      mouseReleased = true;
+
       if (!dragValue) {
         return;
       }
@@ -206,7 +209,8 @@ angular.module('btford.dragon-drop', []).
         container.append(child);
 
         var duplicate = container.attr('btf-double-dragon') !== undefined;
-        var eliminate = container.attr('btf-eliminate') !== undefined; 
+        var eliminate = container.attr('btf-dragon-eliminate') !== undefined; 
+        var delay     = parseInt(container.attr('btf-dragon-delay') || '0');
 
         return function (scope, elt, attr) {
 
@@ -241,6 +245,10 @@ angular.module('btford.dragon-drop', []).
               return;
             }
             
+            mouseReleased = false;
+
+            setTimeout(function(){
+            if (!mouseReleased) {
             // find the right parent
             var originElement = angular.element(ev.target);
             var originScope = originElement.scope();
@@ -277,6 +285,10 @@ angular.module('btford.dragon-drop', []).
 
             spawnFloaty();
             drag(ev);
+
+            }
+            },delay);
+            
           });
         };
       }
