@@ -40,6 +40,7 @@ angular.module('btford.dragon-drop', []).
       dragKey,
       dragOrigin,
       dragDuplicate = false,
+      dragEliminate = false,
       floaty,
       offsetX,
       offsetY;
@@ -152,7 +153,7 @@ angular.module('btford.dragon-drop', []).
         targetScope.$apply(function () {
           add(targetList, dragValue, dragKey);
         });
-      } else if (!dragDuplicate) {
+      } else if (!dragDuplicate && !dragEliminate) {
         // no dropArea here
         // put item back to origin
         $rootScope.$apply(function () {
@@ -205,6 +206,7 @@ angular.module('btford.dragon-drop', []).
         container.append(child);
 
         var duplicate = container.attr('btf-double-dragon') !== undefined;
+        var eliminate = container.attr('btf-eliminate') !== undefined; 
 
         return function (scope, elt, attr) {
 
@@ -268,6 +270,7 @@ angular.module('btford.dragon-drop', []).
               });
             }
             dragDuplicate = duplicate;
+            dragEliminate = eliminate;
 
             offsetX = (ev.pageX - offset.left);
             offsetY = (ev.pageY - offset.top);
