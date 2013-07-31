@@ -210,7 +210,6 @@ angular.module('btford.dragon-drop', []).
 
         var duplicate = container.attr('btf-double-dragon') !== undefined;
         var eliminate = container.attr('btf-dragon-eliminate') !== undefined; 
-        //var delay     = container.attr('btf-dragon-drag') !== undefined;
 
         return function (scope, elt, attr) {
 
