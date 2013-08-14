@@ -11,6 +11,7 @@
   </style>
 </head>
 <body ng-app="ExampleApp">
+
   <div class="container" ng-controller="MainCtrl">
     
     <div class="row">
@@ -22,15 +23,11 @@
     <div class="row">
       <div class="span6">
         <h3>Things</h3>
-        <ul id="thingsList" btf-dragon="thing in things">
-          <li>{{thing}}</li>
-        </ul>
+        <div btf-dragon="thing in things">{{thing}}</div>
       </div>
       <div class="span6">
         <h3>Other Things</h3>
-        <ul id="otherThingsList" btf-dragon="thing in otherThings">
-          <li>{{thing}}</li>
-        </ul>
+        <div btf-dragon="thing in otherThings">{{thing}}</div>
       </div>
     </div>
     
