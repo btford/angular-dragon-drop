@@ -38,6 +38,17 @@
     </div>
     <span id="copyableThingsValues">{{copyableThings.join(',')}}</span>
 
+    <hr/>
+
+    <div>
+      <ul id="noBeeThingsList" btf-dragon="thing in noBeeThings"
+      btf-dragon-accepts="doesntStartWithB"
+      style="background-color: pink; min-height: 100px">
+        <li id="item{{thing}}">{{thing}}</li>
+      </ul>
+    </div>
+    <span id="noBeeThingsValues">{{noBeeThings.join(',')}}</span>
+
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
@@ -49,6 +60,11 @@
         $scope.things = ['Foo', 'Bar', 'Baz'];
         $scope.otherThings = [];
         $scope.copyableThings = ['Paper', 'Right'];
+        $scope.noBeeThings = ['Nose'];
+
+        $scope.doesntStartWithB = function(s) {
+          return s[0] !== 'B';
+        };
       });
   </script>
 </body>

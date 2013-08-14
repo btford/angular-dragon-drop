@@ -49,6 +49,7 @@ describe('angular-dragon-drop', function() {
     assertListElementsEqual('things', ['Foo', 'Bar', 'Baz']);
     assertListElementsEqual('otherThings', []);
     assertListElementsEqual('copyableThings', ['Paper', 'Right']);
+    assertListElementsEqual('noBeeThings', ['Nose']);
   });
 
   it('moves items between lists when dragged', function() {
@@ -70,9 +71,18 @@ describe('angular-dragon-drop', function() {
     assertListElementsEqual('otherThings', []);
   });
 
-  it('copies items when dragged from element with btf-double-dragon', function() {
+  it('copies items with btf-double-dragon', function() {
     dragAndDropItem('itemPaper', 'otherThingsList');
     assertListElementsEqual('copyableThings', ['Paper', 'Right']);
     assertListElementsEqual('otherThings', ['Paper']);
+  });
+
+  it('limits accepted items with btf-dragon-accepts', function() {
+    dragAndDropItem('itemPaper', 'noBeeThingsList');
+    assertListElementsEqual('noBeeThings', ['Nose', 'Paper']);
+    dragAndDropItem('itemBar', 'noBeeThingsList');
+    assertListElementsEqual('noBeeThings', ['Nose', 'Paper']);
+    dragAndDropItem('itemFoo', 'noBeeThingsList');
+    assertListElementsEqual('noBeeThings', ['Nose', 'Paper', 'Foo']);
   });
 });
