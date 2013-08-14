@@ -3,14 +3,16 @@
 <body ng-app="ExampleApp">
   <div class="container" ng-controller="MainCtrl">
     <div class="span6">
-      <ul id="thingsList" btf-dragon="thing in things">
-        <li>{{thing}}</li>
+      <ul id="thingsList" btf-dragon="thing in things"
+      style="background-color: green; min-height: 100px">
+        <li id="item{{thing}}">{{thing}}</li>
       </ul>
     </div>
     <hr/>
     <div class="span6">
-      <ul id="otherThingsList" btf-dragon="thing in otherThings">
-        <li>{{thing}}</li>
+      <ul id="otherThingsList" btf-dragon="thing in otherThings"
+      style="background-color: blue; min-height: 100px">
+        <li id="item{{thing}}">{{thing}}</li>
       </ul>
     </div>
   </div>
@@ -20,7 +22,7 @@
   <script>
     angular.module('ExampleApp', ['btford.dragon-drop']).
       controller('MainCtrl', function ($scope) {
-        $scope.things = ['one', 'two', 'three'];
+        $scope.things = ['0', '1', '2'];
         $scope.otherThings = [];
       });
   </script>

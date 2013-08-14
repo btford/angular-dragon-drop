@@ -14,7 +14,7 @@ var main = function(argv) {
 };
 
 testApp.configure(function() {
-  testApp.use(express.static(__dirname));
+  testApp.use(express.static(path.join(__dirname, "..")));
 });
 
 main(process.argv);
