@@ -85,7 +85,7 @@ See [`example.html`](http://htmlpreview.github.io/?https://github.com/btford/ang
 To run the tests, you will need a running ['Selenium server'](https://code.google.com/p/selenium/downloads/list) with the chrome drivers enabled. Once you have that, run this command:
 
 ```shell
-protractor protractor.js
+./node_modules/protractor/bin/protractor protractor.js
 ```
 
 ## License
