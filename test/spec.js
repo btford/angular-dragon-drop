@@ -76,4 +76,20 @@ describe('angular-dragon-drop', function() {
       expect(elements.length).toEqual(0);
     });
   });
+
+  it('can move an item back to its original list', function() {
+    dragAndDropItem("item1", "otherThingsList");
+    dragAndDropItem("item1", "thingsList");
+
+    findListElements("otherThingsList").then(function(elements) {
+      expect(elements.length).toEqual(0);
+    });
+
+    findListElements("thingsList").then(function(elements) {
+      expect(elements.length).toEqual(3);
+      expect(elements[0].getText()).toEqual("0");
+      expect(elements[1].getText()).toEqual("2");
+      expect(elements[2].getText()).toEqual("1"); // Item1 moved to the end
+    });
+  });
 });
