@@ -1,5 +1,6 @@
 {
     "devDependencies": {
-        "selenium-webdriver": "~2.34.0"
+        "selenium-webdriver": "~2.34.0",
+        "protractor": "*"
     }
 }
