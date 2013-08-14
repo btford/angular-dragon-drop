@@ -1,9 +1,18 @@
 var util = require('util');
 var fs = require('fs');
 var path = require('path');
+var child_process = require('child_process');
 var webdriver = require('selenium-webdriver');
 
-describe('angular-dragon-drop example', function() {
+describe('angular-dragon-drop', function() {
+  var server = null;
+  beforeEach(function() {
+    if (!server) {
+      server = child_process.spawn('./test/webserver.js');
+      server.unref();
+    }
+  });
+
   var ptor = protractor.getInstance();
 
   var listElements = function (id, f) {

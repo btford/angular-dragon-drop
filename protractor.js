@@ -1,10 +1,7 @@
 // Configuration for protractor specs
 
 exports.config = {
-  seleniumServerJar: 'selenium/selenium-server-standalone-2.34.0.jar',
-  seleniumPort: 4444,
-  chromeDriver: 'selenium/chromedriver',
-  seleniumArgs: [],
+  seleniumAddress: 'http://localhost:4444/wd/hub',
 
   specs: [
     'test/spec.js',

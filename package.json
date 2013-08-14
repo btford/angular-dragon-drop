@@ -1,0 +1,5 @@
+{
+    "devDependencies": {
+        "selenium-webdriver": "~2.34.0"
+    }
+}
