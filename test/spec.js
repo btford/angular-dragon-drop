@@ -6,12 +6,12 @@ describe('angular-dragon-drop example', function() {
   var ptor = protractor.getInstance();
 
   beforeEach(function() {
-    ptor.get('http://localhost:8006/example.html');
   });
 
-  it('initializes the first list correctly', function() {
-    var expectedValues = ['one', 'two', 'three'];
+  it('initializes the lists', function() {
+    ptor.get('http://localhost:8006/test/simple.html');
 
+    var expectedValues = ['one', 'two', 'three'];
     ptor.findElement(protractor.By.id("thingsList"))
     .findElements(protractor.By.tagName("li"))
     .then(function (elements) {
@@ -20,9 +20,7 @@ describe('angular-dragon-drop example', function() {
         expect(elements[i].getText()).toEqual(expectedValues[i]);
       }
     });
-  });
 
-  it('initializes the second list correctly', function() {
     ptor.findElement(protractor.By.id("otherThingsList"))
     .findElements(protractor.By.tagName("li"))
     .then(function (elements) {

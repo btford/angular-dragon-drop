@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body ng-app="ExampleApp">
+  <div class="container" ng-controller="MainCtrl">
+    <div class="span6">
+      <ul id="thingsList" btf-dragon="thing in things">
+        <li>{{thing}}</li>
+      </ul>
+    </div>
+    <hr/>
+    <div class="span6">
+      <ul id="otherThingsList" btf-dragon="thing in otherThings">
+        <li>{{thing}}</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+  <script src="../dragon-drop.js"></script>
+  <script>
+    angular.module('ExampleApp', ['btford.dragon-drop']).
+      controller('MainCtrl', function ($scope) {
+        $scope.things = ['one', 'two', 'three'];
+        $scope.otherThings = [];
+      });
+  </script>
+</body>
+</html>

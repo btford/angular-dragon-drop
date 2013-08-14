@@ -2,6 +2,7 @@
 
 var express = require('express');
 var util = require('util');
+var path = require('path');
 var testApp = express();
 var DEFAULT_PORT = 8006;
 
