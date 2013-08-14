@@ -25,6 +25,16 @@
       Nothing interesting here
     </div>
 
+    <hr/>
+
+    <div>
+      <ul id="copyableThingsList" btf-dragon="thing in copyableThings"
+      btf-double-dragon
+      style="background-color: yellow; min-height: 100px">
+        <li id="item{{thing}}">{{thing}}</li>
+      </ul>
+    </div>
+
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
@@ -33,8 +43,9 @@
   <script>
     angular.module('ExampleApp', ['btford.dragon-drop']).
       controller('MainCtrl', function ($scope) {
-        $scope.things = ['0', '1', '2'];
+        $scope.things = ['Foo', 'Bar', 'Baz'];
         $scope.otherThings = [];
+        $scope.copyableThings = ['Paper', 'Right'];
       });
   </script>
 </body>

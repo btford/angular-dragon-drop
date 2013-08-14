@@ -17,9 +17,15 @@ describe('angular-dragon-drop', function() {
 
   var ptor = protractor.getInstance();
 
-  var findListElements = function (id, f) {
-    return ptor.findElement(protractor.By.id(id))
-    .findElements(protractor.By.tagName("li"));
+  var assertListElementsEqual = function (id, values) {
+    ptor.findElement(protractor.By.id(id))
+    .findElements(protractor.By.tagName('li'))
+    .then(function(elements) {
+      expect(elements.length).toEqual(values.length);
+      for (var i = 0; i < elements.length; ++i) {
+        expect(elements[i].getText()).toEqual(values[i]);
+      };
+    });
   };
 
   var dragAndDropItem = function(srcId, dstId) {
@@ -34,62 +40,34 @@ describe('angular-dragon-drop', function() {
     });
   };
 
-  it('initializes the lists correctly', function() {
-    findListElements("thingsList").then(function(elements) {
-      expect(elements.length).toEqual(3);
-      expect(elements[0].getText()).toEqual("0");
-      expect(elements[1].getText()).toEqual("1");
-      expect(elements[2].getText()).toEqual("2");
-    });
-
-    findListElements("otherThingsList").then(function(elements) {
-      expect(elements.length).toEqual(0);
-    });
+  it('initializes the lists based on scope data', function() {
+    assertListElementsEqual('thingsList', ['Foo', 'Bar', 'Baz']);
+    assertListElementsEqual('otherThingsList', []);
+    assertListElementsEqual('copyableThingsList', ['Paper', 'Right']);
   });
 
   it('moves items between lists when dragged', function() {
-    dragAndDropItem("item1", "otherThingsList");
-
-    findListElements("otherThingsList").then(function(elements) {
-      expect(elements.length).toEqual(1);
-      expect(elements[0].getText()).toEqual("1");
-    });
-
-    findListElements("thingsList").then(function(elements) {
-      expect(elements.length).toEqual(2);
-      expect(elements[0].getText()).toEqual("0");
-      expect(elements[1].getText()).toEqual("2");
-    });
+    dragAndDropItem('itemBar', 'otherThingsList');
+    assertListElementsEqual('otherThingsList', ['Bar']);
+    assertListElementsEqual('thingsList', ['Foo', 'Baz']);
   });
 
   it('reappends items to their own list when dragged to nowhere', function() {
-    dragAndDropItem("item1", "boring");
-
-    findListElements("thingsList").then(function(elements) {
-      expect(elements.length).toEqual(3);
-      expect(elements[0].getText()).toEqual("0");
-      expect(elements[1].getText()).toEqual("2");
-      expect(elements[2].getText()).toEqual("1"); // Item1 moved to the end
-    });
-
-    findListElements("otherThingsList").then(function(elements) {
-      expect(elements.length).toEqual(0);
-    });
+    dragAndDropItem('itemBar', 'boring');
+    assertListElementsEqual('thingsList', ['Foo', 'Baz', 'Bar']);
+    assertListElementsEqual('otherThingsList', []);
   });
 
   it('can move an item back to its original list', function() {
-    dragAndDropItem("item1", "otherThingsList");
-    dragAndDropItem("item1", "thingsList");
+    dragAndDropItem('itemBar', 'otherThingsList');
+    dragAndDropItem('itemBar', 'thingsList');
+    assertListElementsEqual('thingsList', ['Foo', 'Baz', 'Bar']);
+    assertListElementsEqual('otherThingsList', []);
+  });
 
-    findListElements("otherThingsList").then(function(elements) {
-      expect(elements.length).toEqual(0);
-    });
-
-    findListElements("thingsList").then(function(elements) {
-      expect(elements.length).toEqual(3);
-      expect(elements[0].getText()).toEqual("0");
-      expect(elements[1].getText()).toEqual("2");
-      expect(elements[2].getText()).toEqual("1"); // Item1 moved to the end
-    });
+  it('copies items when dragged from element with btf-double-dragon', function() {
+    dragAndDropItem('itemPaper', 'otherThingsList');
+    assertListElementsEqual('copyableThingsList', ['Paper', 'Right']);
+    assertListElementsEqual('otherThingsList', ['Paper']);
   });
 });
