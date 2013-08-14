@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <body ng-app="ExampleApp">
-  <div ng-controller="MainCtrl">
+  <div id='main' ng-controller="MainCtrl">
 
     <div>
       <ul id="thingsList" btf-dragon="thing in things"
@@ -9,6 +9,7 @@
         <li id="item{{thing}}">{{thing}}</li>
       </ul>
     </div>
+    <span id="thingsValues">{{things.join(',')}}</span>
 
     <hr/>
 
@@ -18,6 +19,7 @@
         <li id="item{{thing}}">{{thing}}</li>
       </ul>
     </div>
+    <span id="otherThingsValues">{{otherThings.join(',')}}</span>
 
     <hr/>
 
@@ -34,6 +36,7 @@
         <li id="item{{thing}}">{{thing}}</li>
       </ul>
     </div>
+    <span id="copyableThingsValues">{{copyableThings.join(',')}}</span>
 
   </div>
 
