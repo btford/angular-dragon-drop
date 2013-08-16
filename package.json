@@ -4,6 +4,7 @@
         "protractor": "*"
     },
     "scripts": {
-        "test": "node ./node_modules/protractor/bin/protractor test/protractor.js"
+        "test": "node ./node_modules/protractor/bin/protractor test/protractor.js",
+        "sauce-test": "node ./node_modules/protractor/bin/protractor test/protractor-sauce.js"
     }
 }

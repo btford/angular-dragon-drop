@@ -1,10 +1,10 @@
-// Configuration for protractor specs
+// Configuration for local protractor specs
 
 exports.config = {
   seleniumAddress: 'http://localhost:4444/wd/hub',
 
   specs: [
-    'test/spec.js',
+    'test/spec/*.js',
   ],
 
   capabilities: {
