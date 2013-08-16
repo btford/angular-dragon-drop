@@ -12,7 +12,7 @@ exports.config = {
   capabilities: {
     'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
     'build': process.env.TRAVIS_BUILD_NUMBER,
-    'tags': [TRAVIS_NODE_VERSION]
+    'tags': [process.env.TRAVIS_NODE_VERSION]
   },
 
   jasmineNodeOpts: {
