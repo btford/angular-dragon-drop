@@ -1,9 +1,8 @@
 // Configuration for protractor running on Travis CI with Sauce Labs
 
 exports.config = {
-  seleniumAddress: process.env.SAUCE_USERNAME +
-                   ":" + process.env.SAUCE_ACCESS_KEY +
-                   "@localhost:4445",
+  sauceUser: "davidmikesimon",
+  sauceKey: "519e8897-9a6d-4f2c-81a1-10132cab95d0",
 
   specs: [
     'test/spec/*.js',
