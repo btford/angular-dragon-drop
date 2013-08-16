@@ -3,7 +3,7 @@ node_js:
   - '0.8'
   - '0.10'
 
-script: npm travis-test
+script: npm run-script travis-test
 
 addons:
   sauce_connect:
