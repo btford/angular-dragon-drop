@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - '0.8'
+  - '0.10'
+
+script: npm run-script sauce-test
+
+addons:
+  sauce_connect:
+    username: davidmikesimon
+    access_key: "519e8897-9a6d-4f2c-81a1-10132cab95d0"

@@ -1,6 +1,8 @@
 # angular-dragon-drop
 "Drag and drop" directives for AngularJS. Work in progress.
 
+[![Build Status](https://travis-ci.org/DavidMikeSimon/angular-dragon-drop.png)](https://travis-ci.org/DavidMikeSimon/angular-dragon-drop)
+
 ## Install
 
 ```shell
@@ -80,6 +82,14 @@ $scope.shinyThings = function (item) {
 
 ## Example
 See [`example.html`](http://htmlpreview.github.io/?https://github.com/btford/angular-dragon-drop/blob/master/example.html).
+
+## Running the tests
+To run the tests, you will need a running ['Selenium server'](https://code.google.com/p/selenium/downloads/list) with the chrome drivers enabled. Once you have that, run:
+
+```shell
+npm install
+npm test
+```
 
 ## License
 MIT
