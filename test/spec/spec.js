@@ -12,7 +12,7 @@ describe('angular-dragon-drop', function() {
       server.unref(); // Server will stop when the protractor process ends
     }
 
-    ptor.get('http://localhost:8006/test/page.html');
+    ptor.get('http://localhost:8001/test/page.html');
   });
 
   var ptor = protractor.getInstance();
