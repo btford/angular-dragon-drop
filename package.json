@@ -1,0 +1,10 @@
+{
+    "devDependencies": {
+        "selenium-webdriver": "~2.34.0",
+        "protractor": "*",
+        "express": "*"
+    },
+    "scripts": {
+        "test": "node ./node_modules/protractor/bin/protractor test/protractor.js"
+    }
+}
