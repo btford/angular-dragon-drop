@@ -264,13 +264,18 @@ angular.module('btford.dragon-drop', []).
               dragValue = angular.copy(dragValue);
             } else {
               scope.$apply(function () {
-                remove(dragOrigin, dragKey || dragOrigin.indexOf(dragValue));
+                // Added for IE8 compatibility, but depends on lodash/underscore
+                remove(dragOrigin, dragKey || _.indexOf(dragOrigin, dragValue));
               });
             }
             dragDuplicate = duplicate;
 
-            offsetX = (ev.pageX - offset.left);
-            offsetY = (ev.pageY - offset.top);
+            // Fallback to calculating mouse position if browser doesn't support pageX/pageY (IE8)
+            var posX = ev.pageX || (ev.clientX + document.body.scrollLeft + document.documentElement.scrollLeft);
+            var posY = ev.pageY || (ev.clientY + document.body.scrollTop + document.documentElement.scrollTop);
+
+            offsetX = (posX - offset.left);
+            offsetY = (posY - offset.top);
 
             spawnFloaty();
             drag(ev);
