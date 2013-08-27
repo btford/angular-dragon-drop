@@ -221,7 +221,7 @@ angular.module('btford.dragon-drop', []).
 
               floaty.css('margin', '0px');
               floaty.css('z-index', '99999');
-
+              floaty.addClass("btf-dragon-dragging");
               var floatyScope = scope.$new();
               floatyScope[valueIdentifier] = dragValue;
               if (keyIdentifier) {
