@@ -4,7 +4,7 @@
  * License: MIT
  */
 
-'use strict';
+//'use strict';
 
 angular.module('btford.dragon-drop', []).
   directive('btfDragon', function ($document, $compile, $rootScope) {
@@ -39,19 +39,22 @@ angular.module('btford.dragon-drop', []).
     var dragValue,
       dragKey,
       dragOrigin,
+      dragOriginElement,
       dragDuplicate = false,
       floaty,
       offsetX,
       offsetY;
 
     var drag = function (ev) {
-      var x = ev.clientX - offsetX,
-        y = ev.clientY - offsetY;
+      if (!floaty) return;
+      ev.preventDefault();
+      var x = (ev.clientX || ev.originalEvent.touches[0].clientX) - offsetX,
+          y = (ev.clientY || ev.originalEvent.touches[0].clientY) - offsetY;
 
       floaty.css('left', x + 'px');
       floaty.css('top', y + 'px');
     };
-
+   
     var remove = function (collection, index) {
       if (collection instanceof Array) {
         return collection.splice(index, 1);
@@ -94,7 +97,7 @@ angular.module('btford.dragon-drop', []).
 
     var killFloaty = function () {
       if (floaty) {
-        $document.unbind('mousemove', drag);
+        $document.unbind('touchmove mousemove', drag);
         floaty.remove();
         floaty = null;
       }
@@ -126,12 +129,12 @@ angular.module('btford.dragon-drop', []).
       return element;
     };
 
-    $document.bind('mouseup', function (ev) {
+    $document.bind('touchend mouseup', function (ev) {
       if (!dragValue) {
         return;
       }
 
-      var dropArea = getElementBehindPoint(floaty, ev.clientX, ev.clientY);
+      var dropArea = getElementBehindPoint(floaty, (ev.clientX || ev.originalEvent.changedTouches[0].clientX), (ev.clientY || ev.originalEvent.changedTouches[0].clientY));
 
       var accepts = function () {
         return dropArea.attr('btf-dragon') &&
@@ -143,20 +146,27 @@ angular.module('btford.dragon-drop', []).
         dropArea = dropArea.parent();
       }
 
+      dragOriginElement.css("display", "");
+      dragOriginElement.removeClass("btf-dragon-origin");
       if (dropArea.length > 0) {
         var expression = dropArea.attr('btf-dragon');
         var targetScope = dropArea.scope();
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*$/);
 
         var targetList = targetScope.$eval(match[2]);
-        targetScope.$apply(function () {
+
+        $rootScope.$apply(function () {
+            if (!dragDuplicate) {
+              remove(dragOrigin, dragKey || dragOrigin.indexOf(dragValue));
+            }          
           add(targetList, dragValue, dragKey);
         });
       } else if (!dragDuplicate) {
         // no dropArea here
         // put item back to origin
         $rootScope.$apply(function () {
-          add(dragOrigin, dragValue, dragKey);
+            remove(dragOrigin, dragKey || dragOrigin.indexOf(dragValue));
+            add(dragOrigin, dragValue, dragKey);
         });
       }
 
@@ -229,12 +239,12 @@ angular.module('btford.dragon-drop', []).
               }
               $compile(floaty)(floatyScope);
               documentBody.append(floaty);
-              $document.bind('mousemove', drag);
+              $document.bind('touchmove mousemove', drag);
               disableSelect();
             });
           };
 
-          elt.bind('mousedown', function (ev) {
+          elt.bind('touchstart mousedown', function (ev) {
             if (dragValue) {
               return;
             }
@@ -250,6 +260,11 @@ angular.module('btford.dragon-drop', []).
               }
             }
 
+            while (!$(originElement).parent().is("[btf-dragon]")) {
+              originElement = originElement.parent();
+            }
+            dragOriginElement = originElement;
+
             dragValue = originScope[valueIdentifier];
             dragKey = originScope[keyIdentifier];
             if (!dragValue) {
@@ -262,18 +277,19 @@ angular.module('btford.dragon-drop', []).
             dragOrigin = scope.$eval(rhs);
             if (duplicate) {
               dragValue = angular.copy(dragValue);
-            } else {
-              scope.$apply(function () {
-                remove(dragOrigin, dragKey || dragOrigin.indexOf(dragValue));
-              });
-            }
+            } 
             dragDuplicate = duplicate;
 
-            offsetX = (ev.pageX - offset.left);
-            offsetY = (ev.pageY - offset.top);
+            offsetX = ((ev.pageX || ev.originalEvent.touches[0].pageX) - offset.left);
+            offsetY = ((ev.pageY || ev.originalEvent.touches[0].pageY) - offset.top);
 
             spawnFloaty();
             drag(ev);
+            if (!duplicate) {
+              // hide the dragged element - we can't actually remove it because that would stop the touchmove events
+              originElement.css("display", "none");
+              originElement.addClass("btf-dragon-origin");
+            }
           });
         };
       }
