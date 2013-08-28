@@ -41,6 +41,7 @@ angular.module('btford.dragon-drop', []).
       dragOrigin,
       dragOriginElement,
       dragDuplicate = false,
+      dragAwaitingMove = false,
       floaty,
       offsetX,
       offsetY;
@@ -54,6 +55,8 @@ angular.module('btford.dragon-drop', []).
       floaty.css('left', x + 'px');
       floaty.css('top', y + 'px');
     };
+
+
    
     var remove = function (collection, index) {
       if (collection instanceof Array) {
@@ -130,6 +133,7 @@ angular.module('btford.dragon-drop', []).
     };
 
     $document.bind('touchend mouseup', function (ev) {
+      dragAwaitingMove = false;
       if (!dragValue) {
         return;
       }
@@ -244,11 +248,15 @@ angular.module('btford.dragon-drop', []).
             });
           };
 
-          elt.bind('touchstart mousedown', function (ev) {
+          var startDrag = function (ev) {
             if (dragValue) {
               return;
             }
+            elt.unbind('touchmove mousemove', startDrag);
             
+            if (!dragAwaitingMove) {
+              return;
+            }
             // find the right parent
             var originElement = angular.element(ev.target);
             var originScope = originElement.scope();
@@ -290,6 +298,15 @@ angular.module('btford.dragon-drop', []).
               originElement.css("display", "none");
               originElement.addClass("btf-dragon-origin");
             }
+          };
+
+          elt.bind('touchstart mousedown', function (ev) {
+            if (dragValue) {
+              return;
+            }
+            dragAwaitingMove = true;
+            elt.bind('touchmove mousemove', startDrag);
+
           });
         };
       }
