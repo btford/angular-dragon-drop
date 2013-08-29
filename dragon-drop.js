@@ -4,7 +4,7 @@
  * License: MIT
  */
 
-//'use strict';
+'use strict';
 
 angular.module('btford.dragon-drop', []).
   directive('btfDragon', function ($document, $compile, $rootScope) {
