@@ -56,7 +56,7 @@ Example:
 ```
 
 ### btf-dragon-accepts
-Makes the dragon only accepts items that pass the truth test function given by this argument.
+Makes the dragon to only accept items, which pass the truth test function, given by this argument.
 Add the `btf-dragon-accepts` attribute to an element to get the behavior.
 
 Example:
