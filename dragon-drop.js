@@ -95,6 +95,7 @@ angular.module('btford.dragon-drop', []).
     var killFloaty = function () {
       if (floaty) {
         $document.unbind('mousemove', drag);
+        floaty.scope().$destroy();
         floaty.remove();
         floaty = null;
       }
