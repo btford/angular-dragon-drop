@@ -52,6 +52,8 @@ angular.module('btford.dragon-drop', []).
       floaty.css('top', y + 'px');
     };
 
+    var ipadFaker = function () { return; };
+
     var remove = function (collection, index) {
       if (collection instanceof Array) {
         return collection.splice(index, 1);
@@ -95,6 +97,7 @@ angular.module('btford.dragon-drop', []).
     var killFloaty = function () {
       if (floaty) {
         $document.unbind('mousemove', drag);
+        $document.unbind('click', ipadFaker);
         floaty.remove();
         floaty = null;
       }
@@ -229,56 +232,60 @@ angular.module('btford.dragon-drop', []).
               }
               $compile(floaty)(floatyScope);
               documentBody.append(floaty);
+              $document.bind('click', ipadFaker);
               $document.bind('mousemove', drag);
               disableSelect();
             });
           };
 
           elt.bind('mousedown', function (ev) {
-            if (dragValue) {
-              return;
-            }
-            
-            // find the right parent
-            var originElement = angular.element(ev.target);
-            var originScope = originElement.scope();
-
-            while (originScope[valueIdentifier] === undefined) {
-              originScope = originScope.$parent;
-              if (!originScope) {
+            var isIpad = navigator.userAgent.indexOf("iPad") != -1;
+            if (!isIpad) {
+              if (dragValue) {
                 return;
               }
+              
+              // find the right parent
+              var originElement = angular.element(ev.target);
+              var originScope = originElement.scope();
+
+              while (originScope[valueIdentifier] === undefined) {
+                originScope = originScope.$parent;
+                if (!originScope) {
+                  return;
+                }
+              }
+
+              dragValue = originScope[valueIdentifier];
+              dragKey = originScope[keyIdentifier];
+              if (!dragValue) {
+                return;
+              }
+
+              // get offset inside element to drag
+              var offset = getElementOffset(ev.target);
+
+              dragOrigin = scope.$eval(rhs);
+              if (duplicate) {
+                dragValue = angular.copy(dragValue);
+              } else {
+                scope.$apply(function () {
+                  // Added for IE8 compatibility, but depends on lodash/underscore
+                  remove(dragOrigin, dragKey || _.indexOf(dragOrigin, dragValue));
+                });
+              }
+              dragDuplicate = duplicate;
+
+              // Fallback to calculating mouse position if browser doesn't support pageX/pageY (IE8)
+              var posX = ev.pageX || (ev.clientX + document.body.scrollLeft + document.documentElement.scrollLeft);
+              var posY = ev.pageY || (ev.clientY + document.body.scrollTop + document.documentElement.scrollTop);
+
+              offsetX = (posX - offset.left);
+              offsetY = (posY - offset.top);
+
+              spawnFloaty();
+              drag(ev);
             }
-
-            dragValue = originScope[valueIdentifier];
-            dragKey = originScope[keyIdentifier];
-            if (!dragValue) {
-              return;
-            }
-
-            // get offset inside element to drag
-            var offset = getElementOffset(ev.target);
-
-            dragOrigin = scope.$eval(rhs);
-            if (duplicate) {
-              dragValue = angular.copy(dragValue);
-            } else {
-              scope.$apply(function () {
-                // Added for IE8 compatibility, but depends on lodash/underscore
-                remove(dragOrigin, dragKey || _.indexOf(dragOrigin, dragValue));
-              });
-            }
-            dragDuplicate = duplicate;
-
-            // Fallback to calculating mouse position if browser doesn't support pageX/pageY (IE8)
-            var posX = ev.pageX || (ev.clientX + document.body.scrollLeft + document.documentElement.scrollLeft);
-            var posY = ev.pageY || (ev.clientY + document.body.scrollTop + document.documentElement.scrollTop);
-
-            offsetX = (posX - offset.left);
-            offsetY = (posY - offset.top);
-
-            spawnFloaty();
-            drag(ev);
           });
         };
       }
