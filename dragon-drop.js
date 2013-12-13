@@ -134,7 +134,7 @@ angular.module('btford.dragon-drop', []).
       var dropArea = getElementBehindPoint(floaty, ev.clientX, ev.clientY);
 
       var accepts = function () {
-        return dropArea.attr('btf-dragon') &&
+        return (dropArea.attr('btf-dragon') || angular.isDefined(dropArea.attr('btf-dragon-trash')) ) &&
         ( !dropArea.attr('btf-dragon-accepts') ||
           dropArea.scope().$eval(dropArea.attr('btf-dragon-accepts'))(dragValue) );
       };
@@ -144,14 +144,22 @@ angular.module('btford.dragon-drop', []).
       }
 
       if (dropArea.length > 0) {
-        var expression = dropArea.attr('btf-dragon');
-        var targetScope = dropArea.scope();
-        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*$/);
+          var isList = angular.isDefined(dropArea.attr('btf-dragon')),
+              isTrash = angular.isDefined(dropArea.attr('btf-dragon-trash'));
+          if(isList){
+              var expression = dropArea.attr('btf-dragon');
+              var targetScope = dropArea.scope();
+              var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*$/);
 
-        var targetList = targetScope.$eval(match[2]);
-        targetScope.$apply(function () {
-          add(targetList, dragValue, dragKey);
-        });
+              var targetList = targetScope.$eval(match[2]);
+              targetScope.$apply(function () {
+                  add(targetList, dragValue, dragKey);
+              });
+          }
+          else if(isTrash){
+              // noop
+          }
+
       } else if (!dragDuplicate) {
         // no dropArea here
         // put item back to origin
