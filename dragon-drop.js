@@ -186,7 +186,7 @@ angular.module('btford.dragon-drop', []).
 
         // get the `thing in things` expression
         var expression = attr.btfDragon;
-        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*$/);
+        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(?:\s+\|\s+(.*))?$/);
         if (!match) {
           throw Error("Expected btfDragon in form of '_item_ in _collection_' but got '" +
             expression + "'.");
