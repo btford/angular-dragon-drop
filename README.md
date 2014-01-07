@@ -79,7 +79,7 @@ $scope.shinyThings = function (item) {
 ```
 
 ## Example
-See [`example.html`](http://htmlpreview.github.io/?https://github.com/btford/angular-dragon-drop/blob/master/example.html).
+See [`example.html`](http://htmlpreview.github.io/?https://github.com/shootermv/angular-dragon-drop/blob/master/example.html).
 
 ## License
 MIT

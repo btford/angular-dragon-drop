@@ -62,9 +62,18 @@ angular.module('btford.dragon-drop', []).
       }
     };
 
-    var add = function (collection, item, key) {
+    var add = function (collection, item, key, orderBy) {
       if (collection instanceof Array) {
         collection.push(item);
+		/*sorting support*/		
+		if(orderBy){		 
+		  	   
+		   collection = collection.sort(function(a, b){
+				a = parseInt(a[orderBy]);
+				b = parseInt(b[orderBy]);
+				return a - b;
+		   })		   
+		 }	
       } else {
         collection[key] = item;
       }
@@ -146,17 +155,23 @@ angular.module('btford.dragon-drop', []).
       if (dropArea.length > 0) {
         var expression = dropArea.attr('btf-dragon');
         var targetScope = dropArea.scope();
-        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*$/);
+        //added "(?:\s+\|\s+(.*))?" for support orderBy
+        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(?:\s+\|\s+(.*))?$/);
 
+		
+        
         var targetList = targetScope.$eval(match[2]);
+		var orderBy;
+		if(match[3]){orderBy = match[3].split(':')[1];}
+
         targetScope.$apply(function () {
-          add(targetList, dragValue, dragKey);
+          add(targetList, dragValue, dragKey, orderBy);
         });
       } else if (!dragDuplicate) {
         // no dropArea here
         // put item back to origin
         $rootScope.$apply(function () {
-          add(dragOrigin, dragValue, dragKey);
+          add(dragOrigin, dragValue, dragKey, orderBy);
         });
       }
 
@@ -171,7 +186,7 @@ angular.module('btford.dragon-drop', []).
 
         // get the `thing in things` expression
         var expression = attr.btfDragon;
-        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*$/);
+        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(?:\s+\|\s+(.*))?$/);
         if (!match) {
           throw Error("Expected btfDragon in form of '_item_ in _collection_' but got '" +
             expression + "'.");

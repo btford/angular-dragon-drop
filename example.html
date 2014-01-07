@@ -2,12 +2,15 @@
 <html>
 <head>
   <title>Dragon Drop for AngularJS</title>
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/2.3.1/spruce/bootstrap.min.css">
+  <link rel="stylesheet" href="lib/bootstrap.min.css">
   <style>
     [btf-dragon] {
       padding: 20px;
       border: 1px solid red;
     }
+	[btf-dragon].sortable span{
+		display:block;
+	}
   </style>
 </head>
 <body ng-app="ExampleApp">
@@ -44,15 +47,47 @@
       </div>
     </div>
 
+	<h3>Sorting Support:</h3>
+	 <div style="border:2px solid blue"></div>
+	 
+	 
+	 
+	 
+    <div class="row">
+      <div class="span6">
+        <h3>sortableThings</h3>
+        <div class="sortable" btf-dragon="thing in sortablethings | orderBy :'id'">{{thing.name}}</div>
+      </div>
+      <div class="span6">
+        <h3>Other Things</h3>
+        <div class="sortable" btf-dragon="thing in sortableotherThings | orderBy :'id':false">{{thing.name}}</div>
+      </div>
+    </div>
+    
+    <hr>
+
+    <div class="row">
+      <div class="span6">
+        <h3>sortableThings</h3>
+        <pre>{{sortablethings | json}}</pre>
+      </div>
+      <div class="span6">
+        <h3>Other Things</h3>
+        <pre>{{sortableotherThings | json}}</pre>
+      </div>
+    </div>	 
   </div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+  <script src="lib/angular.min.js"></script>
   <script src="dragon-drop.js"></script>
   <script>
     angular.module('ExampleApp', ['btford.dragon-drop']).
       controller('MainCtrl', function ($scope) {
         $scope.things = ['one', 'two', 'three'];
         $scope.otherThings = [];
+		
+		$scope.sortablethings = [{name:'one',id:3}, {name:'two',id:2}, {name:'three',id:1}];
+        $scope.sortableotherThings = [];
       });
   </script>
 </body>
