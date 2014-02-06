@@ -15,10 +15,10 @@ angular.module('btford.dragon-drop', []).
            / /\ \ \ _ \/ _ /      /    \
           / / /\ \ {*}\/{*}      /  / \ \
           | | | \ \( (00) )     /  // |\ \
-          | | | |\ \(V""V)\    /  / | || \| 
-          | | | | \ |^--^| \  /  / || || || 
+          | | | |\ \(V""V)\    /  / | || \|
+          | | | | \ |^--^| \  /  / || || ||
          / / /  | |( WWWW__ \/  /| || || ||
-        | | | | | |  \______\  / / || || || 
+        | | | | | |  \______\  / / || || ||
         | | | / | | )|______\ ) | / | || ||
         / / /  / /  /______/   /| \ \ || ||
        / / /  / /  /\_____/  |/ /__\ \ \ \ \
@@ -32,7 +32,7 @@ angular.module('btford.dragon-drop', []).
            \   \________\_    _\               ____/
          __/   /\_____ __/   /   )\_,      _____/
         /  ___/  \uuuu/  ___/___)    \______/
-        VVV  V        VVV  V 
+        VVV  V        VVV  V
     */
     // this ASCII dragon is really important, do not remove
 
@@ -44,7 +44,20 @@ angular.module('btford.dragon-drop', []).
       mouseReleased = true,
       floaty,
       offsetX,
-      offsetY;
+      offsetY,
+      fixed;
+
+    var isFixed = function(element) {
+      var parents = element.parent(), i, len = parents.length;
+      for (i = 0; i < len; i++) {
+        if (parents[i].hasAttribute('btf-dragon-fixed')) {
+          return true;
+        } else if (parents[i].hasAttribute('btf-dragon')) {
+          return false;
+        }
+      }
+      return false;
+    };
 
     var drag = function (ev) {
       var x = ev.clientX - offsetX,
@@ -64,12 +77,30 @@ angular.module('btford.dragon-drop', []).
       }
     };
 
-    var add = function (collection, item, key) {
+    var add = function (collection, item, key, position) {
       if (collection instanceof Array) {
-        collection.push(item);
+        var pos;
+        if (position === 0 || position) {
+          pos = position;
+        } else {
+          pos = collection.length;
+        }
+        collection.splice(pos, 0, item);
       } else {
         collection[key] = item;
       }
+    };
+
+    var findContainer = function(elem){
+      var children = elem.find('*');
+
+      for (var i = 0; i < children.length; i++){
+        if (children[i].hasAttribute('btf-dragon-container')) {
+          return angular.element(children[i]);
+        }
+      }
+
+      return null;
     };
 
     var documentBody = angular.element($document[0].body);
@@ -96,7 +127,9 @@ angular.module('btford.dragon-drop', []).
 
     var killFloaty = function () {
       if (floaty) {
+        $rootScope.$broadcast('drag-end');
         $document.unbind('mousemove', drag);
+        floaty.scope().$destroy();
         floaty.remove();
         floaty = null;
       }
@@ -147,6 +180,43 @@ angular.module('btford.dragon-drop', []).
         dropArea = dropArea.parent();
       }
 
+      if (dropArea.attr('btf-dragon-sortable') !== undefined) {
+
+        var min = dropArea[0].getBoundingClientRect().top;
+        var max = dropArea[0].getBoundingClientRect().bottom;
+        var positions = [];
+        var position;
+
+        positions.push(min);
+
+        var i, j, leni, lenj;
+        for (i = 0, leni = dropArea[0].children.length; i < leni; i++) {
+          var totalHeight = 0;
+          var smallestTop = Number.POSITIVE_INFINITY;
+          for (j = 0, lenj = dropArea[0].children[i].getClientRects().length; j < lenj; j++) {
+            if (smallestTop > dropArea[0].children[i].getClientRects()[j].top) {
+              smallestTop = dropArea[0].children[i].getClientRects()[j].top;
+            }
+            totalHeight += dropArea[0].children[i].getClientRects()[j].height;
+          }
+          if (dropArea[0].children[i].attributes['btf-dragon-position'] !== undefined) {
+            positions.push(smallestTop + (totalHeight / 2));
+          }
+
+        }
+
+        positions.push(max);
+
+        i = 0;
+        while (i < positions.length) {
+          if (positions[i] <= ev.clientY) {
+            position = i;
+          }
+          i++;
+        }
+
+      }
+
       if (dropArea.length > 0) {
         var expression = dropArea.attr('btf-dragon');
         var targetScope = dropArea.scope();
@@ -154,7 +224,7 @@ angular.module('btford.dragon-drop', []).
 
         var targetList = targetScope.$eval(match[2]);
         targetScope.$apply(function () {
-          add(targetList, dragValue, dragKey);
+          add(targetList, dragValue, dragKey, position);
         });
       } else if (!dragDuplicate && !dragEliminate) {
         // no dropArea here
@@ -177,8 +247,8 @@ angular.module('btford.dragon-drop', []).
         var expression = attr.btfDragon;
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*$/);
         if (!match) {
-          throw Error("Expected btfDragon in form of '_item_ in _collection_' but got '" +
-            expression + "'.");
+          throw new Error('Expected btfDragon in form of "_item_ in _collection_" but got "' +
+            expression + '"."');
         }
         var lhs = match[1];
         var rhs = match[2];
@@ -188,8 +258,18 @@ angular.module('btford.dragon-drop', []).
         var valueIdentifier = match[3] || match[1];
         var keyIdentifier = match[2];
 
+        var duplicate = container.attr('btf-double-dragon') !== undefined;
+
         // pull out the template to re-use.
         // Improvised ng-transclude.
+        if (container.attr('btf-dragon-base') !== undefined){
+          container = findContainer(container);
+
+          if (!container){
+            throw new Error('Expected btf-dragon-base to be used with a companion btf-dragon-conatiner');
+          }
+        }
+
         var template = container.html();
 
         // wrap text nodes
@@ -205,23 +285,29 @@ angular.module('btford.dragon-drop', []).
         var child = template.clone();
         child.attr('ng-repeat', expression);
 
+        if (container.attr('btf-dragon-sortable') !== undefined) {
+          child.attr('btf-dragon-position', '{{$index}}');
+        }
+
         container.html('');
         container.append(child);
 
-        var duplicate = container.attr('btf-double-dragon') !== undefined;
-        var eliminate = container.attr('btf-dragon-eliminate') !== undefined; 
+        var eliminate = container.attr('btf-dragon-eliminate') !== undefined;
+
 
         return function (scope, elt, attr) {
 
           var accepts = scope.$eval(attr.btfDragonAccepts);
 
           if (accepts !== undefined && typeof accepts !== 'function') {
-            throw Error('Expected btfDragonAccepts to be a function.');
+            throw new Error('Expected btfDragonAccepts to be a function.');
           }
 
           var spawnFloaty = function () {
+            $rootScope.$broadcast('drag-start');
             scope.$apply(function () {
               floaty = template.clone();
+
               floaty.css('position', 'fixed');
 
               floaty.css('margin', '0px');
@@ -240,7 +326,27 @@ angular.module('btford.dragon-drop', []).
           };
 
           elt.bind('mousedown', function (ev) {
+
+            //If a person uses middle or right mouse button, don't do anything
+            if ([1, 2].indexOf(ev.button) > -1) {
+              return;
+            }
+
+            var tag = $document[0].elementFromPoint(ev.clientX,ev.clientY).tagName;
+            if (tag === 'SELECT' || tag === 'INPUT' || tag === 'BUTTON') {
+              return;
+            } else {
+              
             mouseReleased = false;
+
+              if (isFixed(angular.element(ev.target))) {
+                fixed = true;
+              } else {
+                fixed = false;
+              }
+
+            }
+
           });
 
           elt.bind('mousemove', function(ev) {
@@ -248,7 +354,10 @@ angular.module('btford.dragon-drop', []).
               return;
             }
 
-            
+            if(isFixed(angular.element(ev.target)) || fixed){
+              return;
+            }
+
             // find the right parent
             var originElement = angular.element(ev.target);
             var originScope = originElement.scope();
@@ -280,12 +389,13 @@ angular.module('btford.dragon-drop', []).
             dragDuplicate = duplicate;
             dragEliminate = eliminate;
 
+
             offsetX = (ev.pageX - offset.left);
             offsetY = (ev.pageY - offset.top);
 
             spawnFloaty();
             drag(ev);
-            
+
           });
         };
       }
