@@ -1,10 +1,12 @@
+'use strict';
+
 /*
  * angular-dragon-drop v0.3.1
  * (c) 2013 Brian Ford http://briantford.com
  * License: MIT
  */
 
-'use strict';
+
 
 angular.module('btford.dragon-drop', []).
   directive('btfDragon', function ($document, $compile, $rootScope) {
@@ -138,7 +140,8 @@ angular.module('btford.dragon-drop', []).
     var getElementOffset = function (elt) {
 
       var box = elt.getBoundingClientRect();
-      var body = $document[0].body;
+      //var body = $document[0].body;
+      var body = $document[0].documentElement;
 
       var xPosition = box.left + body.scrollLeft;
       var yPosition = box.top + body.scrollTop;
@@ -336,7 +339,7 @@ angular.module('btford.dragon-drop', []).
             if (tag === 'SELECT' || tag === 'INPUT' || tag === 'BUTTON') {
               return;
             } else {
-              
+
             mouseReleased = false;
 
               if (isFixed(angular.element(ev.target))) {
