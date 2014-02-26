@@ -97,6 +97,7 @@ angular.module('btford.dragon-drop', []).
         $document.unbind('mousemove', drag);
         floaty.remove();
         floaty = null;
+        enableSelect();
       }
     };
 
