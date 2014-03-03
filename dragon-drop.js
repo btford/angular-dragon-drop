@@ -202,6 +202,7 @@ angular.module('btford.dragon-drop', []).
           template = angular.element('<span>' + template + '</span>');
         }
         var child = template.clone();
+        expression = expression + ' track by $index';
         child.attr('ng-repeat', expression);
 
         container.html('');
