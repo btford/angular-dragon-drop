@@ -78,6 +78,23 @@ $scope.shinyThings = function (item) {
 };
 ```
 
+### btf-eliminate
+Makes it so that the item is eliminated if it is not dropped inside of another dragon.
+Add the `btf-eliminate` attribute to an element to get the behavior.
+
+Example:
+```html
+<h2>These get copied</h2>
+<div btf-dragon="item in list" btf-double-dragon>
+  {{item.name}}
+</div>
+<h2>These get moved or eliminated</h2>
+<div btf-dragon="item in otherList" btf-eliminate>
+  {{item.name}}
+</div>
+```
+
+
 ## Example
 See [`example.html`](http://htmlpreview.github.io/?https://github.com/btford/angular-dragon-drop/blob/master/example.html).
 
