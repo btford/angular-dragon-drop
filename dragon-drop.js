@@ -145,12 +145,17 @@ angular.module('btford.dragon-drop', []).
 
       if (dropArea.length > 0) {
         var expression = dropArea.attr('btf-dragon');
+        var dropCallback = dropArea.attr('btf-dragon-drop');
         var targetScope = dropArea.scope();
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*$/);
 
         var targetList = targetScope.$eval(match[2]);
+        var targetCallback = targetScope.$eval(dropCallback);
         targetScope.$apply(function () {
           add(targetList, dragValue, dragKey);
+          if (targetCallback && angular.isFunction(targetCallback)) {
+            targetCallback(dragValue, dragKey);
+          }
         });
       } else if (!dragDuplicate) {
         // no dropArea here
