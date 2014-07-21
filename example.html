@@ -27,7 +27,7 @@
       </div>
       <div class="span6">
         <h3>Other Things</h3>
-        <div btf-dragon="thing in otherThings">{{thing}}</div>
+        <div btf-dragon="thing in otherThings" btf-dragon-drop="dropCallback">{{thing}}</div>
       </div>
     </div>
     
@@ -53,6 +53,9 @@
       controller('MainCtrl', function ($scope) {
         $scope.things = ['one', 'two', 'three'];
         $scope.otherThings = [];
+        $scope.dropCallback = function(value, key) {
+          console.log('Value:', value, 'Key:', key);
+        }
       });
   </script>
 </body>
